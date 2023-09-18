@@ -22,7 +22,7 @@ const questions = [
   {
     question:
       "Quel est le langage de programmation utilisé pour créer des pages web dynamiques/interactives ?",
-    answers: ["HTML", "CSS", "JavaScript", "PHP"],
+    answers: ["HTML", "CSS", "JavaScript", "C++"],
     correctAnswer: "JavaScript",
   },
   {
@@ -52,7 +52,7 @@ const questions = [
     correctAnswer: "a",
   },
   {
-    question: "Quelle est la principale fonction de CSS ?",
+    question: "Quelle est la <u>principale</u> fonction de CSS ?",
     answers: [
       "Gestion des bases de données",
       "Style et mise en page des pages web",
@@ -74,12 +74,12 @@ const questions = [
 ];
 
 const quizForm = document.getElementById("quiz-form");
-const currentQuestionIndex = 0;
+let currentQuestionIndex = 0;
 
-function displayQuestionAnswers(index) {
+function displayQuestions(index) {
   const answersArray = questions[index].answers;
   quizForm.innerHTML = `
-  <h2>${index + 1}. ${questions[index].question}</h2>
+  <h2>Question ${index + 1}: <span>${questions[index].question}</span></h2>
   ${answersArray
     .map(
       (answer, i) =>
@@ -94,10 +94,37 @@ function displayQuestionAnswers(index) {
 `;
 }
 
-function verifyAnswer(event) {
-  console.log(event.target);
+function verifyAnswer() {
+  const selectedAnswer = document.querySelector("input[name='answer']:checked");
+
+  if (!selectedAnswer) {
+    alert("Veuillez sélectionner une réponse.");
+    return;
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const userAnswer = selectedAnswer.nextElementSibling.textContent;
+  if (userAnswer === currentQuestion.correctAnswer) {
+    selectedAnswer.parentElement.style.backgroundColor = "green";
+  } else {
+    selectedAnswer.parentElement.style.backgroundColor = "red";
+    return;
+  }
+
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex < questions.length) {
+    setTimeout(() => {
+      displayQuestions(currentQuestionIndex);
+    }, 800);
+  } else {
+    alert("Félicitations, vous avez terminé le questionnaire !");
+  }
 }
 
-quizForm.addEventListener("click", verifyAnswer);
-
-displayQuestionAnswers(currentQuestionIndex);
+quizForm.addEventListener("click", (event) => {
+  if (event.target.type === "radio") {
+    verifyAnswer();
+  }
+});
+displayQuestions(currentQuestionIndex);
